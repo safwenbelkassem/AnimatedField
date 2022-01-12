@@ -73,5 +73,10 @@ public struct AnimatedFieldFormat {
     /// Highlight color when becomes active
     public var highlightColor: UIColor? = UIColor(displayP3Red: 0, green: 139/255, blue: 96/255, alpha: 1.0)
     
+    public var contentType : UITextContentType?
+    
+    public var leftIcon : UIImage?
+    
+    
     public init() {}
 }

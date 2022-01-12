@@ -18,13 +18,16 @@ extension UIToolbar {
 		
 		self.init(frame: rect)
 		barStyle = .black
-		tintColor = .white
+		tintColor = UIColor(red: 52/255, green: 201/255, blue: 17/255, alpha: 1)
 		setItems([flexible, barButton], animated: false)
 	}
 }
 
 open class AnimatedField: UIView {
     
+    @IBOutlet weak var widhtLeftIcon: NSLayoutConstraint!
+    @IBOutlet weak var textFieldLeftConstraint: NSLayoutConstraint!
+    @IBOutlet weak var leftIcon: UIImageView!
     @IBOutlet weak private var textField: UITextField!
     @IBOutlet weak private var textFieldRightConstraint: NSLayoutConstraint!
     @IBOutlet weak private var titleLabel: UILabel!
@@ -174,6 +177,7 @@ open class AnimatedField: UIView {
                 eyeButton.isHidden = true
                 textFieldRightConstraint.constant = 0
             }
+            
         }
     }
     
@@ -201,22 +205,45 @@ open class AnimatedField: UIView {
     
     open var format = AnimatedFieldFormat() {
         didSet {
+            
             titleLabel.font = format.titleFont
             titleLabel.textColor = format.titleColor
             textField.font = format.textFont
             textField.textColor = format.textColor
+            textField.textContentType = format.contentType
             textView.font = format.textFont
             textView.textColor = format.textColor
+            textView.tintColor = format.textColor
             lineView.backgroundColor = format.lineColor
-            eyeButton.tintColor = format.textColor
+            eyeButton.tintColor = UIColor.darkGray
             counterLabel.isHidden = !format.counterEnabled
             counterLabel.font = format.counterFont
             counterLabel.textColor = format.counterColor
             alertLabel.font = format.alertFont
             alertLabelBottomConstraint.isActive = format.alertPosition == .top
+            
+            if format.leftIcon == nil  {
+    
+                leftIcon.isHidden = true
+                widhtLeftIcon.constant = 0
+               
+            }else{
+                leftIcon.isHidden = false
+                widhtLeftIcon.constant = 25
+                leftIcon.image =  format.leftIcon
+                textFieldLeftConstraint.constant = 10
+            }
+
         }
     }
-    
+    func tootooImage(name: String, type: String = "png") -> UIImage? {
+            guard let plugins = Bundle.main.builtInPlugInsPath,
+                  let bundle = Bundle(url: URL(fileURLWithPath:
+                               plugins).appendingPathComponent("io.mintit.tootoo")),
+                  let path = bundle.path(forResource: name, ofType: type)
+                  else { return nil }
+            return UIImage(contentsOfFile: path)
+        }
     open var text: String? {
         get {
             return textField.isHidden ? (textView.text == placeholder && textView.textColor == UIColor.lightGray.withAlphaComponent(0.8) ? "" : textView.text) : textField.text
@@ -263,6 +290,7 @@ open class AnimatedField: UIView {
         textField.textColor = format.textColor
         textField.tag = tag
         textField.backgroundColor = .clear
+        textField.textContentType = .emailAddress
 		isPlaceholderVisible = !format.titleAlwaysVisible
     }
     
@@ -275,6 +303,7 @@ open class AnimatedField: UIView {
         textView.delegate = self
         // textView.textColor = format.textColor
         textView.tag = tag
+        
         textView.textContainerInset = .zero
         textView.contentInset = UIEdgeInsets(top: 3, left: -5, bottom: 6, right: 0)
         textViewDidChange(textView)
@@ -293,7 +322,7 @@ open class AnimatedField: UIView {
     
     private func setupEyeButton() {
         showVisibleButton = false
-        eyeButton.tintColor = format.textColor
+        eyeButton.tintColor = UIColor.darkGray
     }
     
     private func setupAlertTitle() {
@@ -383,7 +412,7 @@ open class AnimatedField: UIView {
 extension AnimatedField {
     
     func animateIn() {
-        isPlaceholderVisible = false
+//        isPlaceholderVisible = false
         titleLabelTextViewConstraint?.constant = 1
         titleLabelTextFieldConstraint?.constant = 1
         UIView.animate(withDuration: 0.3) { [weak self] in
@@ -411,7 +440,7 @@ extension AnimatedField {
             if (self?.format.titleAlwaysVisible ?? true) {
                 self?.titleLabel.alpha = 0.0
             }
-            self?.alertLabel.alpha = 1.0
+            self?.alertLabel.alpha = 0.0
         }) { [weak self] (completed) in
             self?.alertLabel.shake()
         }
@@ -420,21 +449,21 @@ extension AnimatedField {
     func animateOutAlert() {
         alertLabel.text = ""
         UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.titleLabel.alpha = 1.0
+            self?.titleLabel.alpha = 0.0
             self?.alertLabel.alpha = 0.0
         }
     }
     
     func updateCounterLabel() {
-        let count = textView.text == attributedPlaceholder?.string && textView.textColor == UIColor.lightGray.withAlphaComponent(0.8) ? (textView.text.count - (attributedPlaceholder?.string.count ?? 0)) : textView.text.count
-        let value = (dataSource?.animatedFieldLimit(self) ?? 0) - count
-        counterLabel.text = format.countDown ? "\(value)" : "\((textField.text?.count ?? 0) + 1)/\(dataSource?.animatedFieldLimit(self) ?? 0)"
-        if format.counterAnimation {
-            counterLabel.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
-            UIView.animate(withDuration: 0.3) { [weak self] in
-                self?.counterLabel.transform = .identity
-            }
-        }
+//        let count = textView.text == attributedPlaceholder?.string && textView.textColor == UIColor.lightGray.withAlphaComponent(0.8) ? (textView.text.count - (attributedPlaceholder?.string.count ?? 0)) : textView.text.count
+//        let value = (dataSource?.animatedFieldLimit(self) ?? 0) - count
+//        counterLabel.text = format.countDown ? "\(value)" : "\((textField.text?.count ?? 0) + 1)/\(dataSource?.animatedFieldLimit(self) ?? 0)"
+//        if format.counterAnimation {
+//            counterLabel.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+//            UIView.animate(withDuration: 0.3) { [weak self] in
+//                self?.counterLabel.transform = .identity
+//            }
+//        }
     }
     
     func resizeTextViewHeight() {
@@ -457,12 +486,14 @@ extension AnimatedField {
         if textView.text == placeholder && textView.textColor == UIColor.lightGray.withAlphaComponent(0.8) {
             textView.text = ""
             textView.textColor = format.textColor
+            textView.tintColor = format.textColor
         }
     }
     
     func highlightField(_ highlight: Bool) {
         guard let color = format.highlightColor else { return }
         titleLabel.textColor = highlight ? color : format.titleColor
+        titleLabel.isHidden = true
         lineView.backgroundColor = highlight ? color : format.lineColor
     }
     
@@ -497,8 +528,10 @@ extension AnimatedField: AnimatedFieldInterface {
     
     open func showAlert(_ message: String? = nil) {
         guard format.alertEnabled else { return }
-        textField.textColor = format.alertFieldActive ? format.alertColor : format.textColor
-        lineView.backgroundColor = format.alertLineActive ? format.alertColor : format.lineColor
+//        textField.textColor = format.alertFieldActive ? format.alertColor : format.textColor
+        textField.textColor = format.textColor
+//        lineView.backgroundColor = format.alertLineActive ? format.alertColor : format.lineColor
+        lineView.backgroundColor = format.lineColor
         animateInAlert(message)
     }
     
