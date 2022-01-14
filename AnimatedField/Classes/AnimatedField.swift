@@ -412,7 +412,7 @@ open class AnimatedField: UIView {
 extension AnimatedField {
     
     func animateIn() {
-//        isPlaceholderVisible = false
+        isPlaceholderVisible = false
         titleLabelTextViewConstraint?.constant = 1
         titleLabelTextFieldConstraint?.constant = 1
         UIView.animate(withDuration: 0.3) { [weak self] in
@@ -449,7 +449,7 @@ extension AnimatedField {
     func animateOutAlert() {
         alertLabel.text = ""
         UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.titleLabel.alpha = 0.0
+            self?.titleLabel.alpha = 1.0
             self?.alertLabel.alpha = 0.0
         }
     }
@@ -493,7 +493,7 @@ extension AnimatedField {
     func highlightField(_ highlight: Bool) {
         guard let color = format.highlightColor else { return }
         titleLabel.textColor = highlight ? color : format.titleColor
-        titleLabel.isHidden = true
+//        titleLabel.isHidden = true
         lineView.backgroundColor = highlight ? color : format.lineColor
     }
     
