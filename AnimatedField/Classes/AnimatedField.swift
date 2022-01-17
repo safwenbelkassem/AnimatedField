@@ -214,8 +214,8 @@ open class AnimatedField: UIView {
             textView.font = format.textFont
             textView.textColor = format.textColor
             textView.tintColor = format.textColor
-            lineView.backgroundColor = format.lineColor
-            eyeButton.tintColor = UIColor.darkGray
+            lineView.backgroundColor = UIColor(red: 178/255, green: 188/255, blue: 197/255, alpha: 1)
+            eyeButton.tintColor = UIColor(red: 178/255, green: 188/255, blue: 197/255, alpha: 1)
             counterLabel.isHidden = !format.counterEnabled
             counterLabel.font = format.counterFont
             counterLabel.textColor = format.counterColor
