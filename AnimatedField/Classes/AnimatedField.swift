@@ -214,7 +214,7 @@ open class AnimatedField: UIView {
             textView.font = format.textFont
             textView.textColor = format.textColor
             textView.tintColor = format.textColor
-            lineView.backgroundColor = UIColor(red: 178/255, green: 188/255, blue: 197/255, alpha: 1)
+            lineView.backgroundColor = format.lineColor
             eyeButton.tintColor = UIColor(red: 178/255, green: 188/255, blue: 197/255, alpha: 1)
             counterLabel.isHidden = !format.counterEnabled
             counterLabel.font = format.counterFont
@@ -543,7 +543,7 @@ extension AnimatedField: AnimatedFieldInterface {
     
     open func secureField(_ secure: Bool) {
         isSecure = secure
-        eyeButton.setImage(secure ? format.visibleOnImage : format.visibleOffImage, for: .normal)
+        eyeButton.setImage(secure ? UIImage(named: "eyeIcon") : UIImage(named: "eyeIconOff"), for: .normal)
         delegate?.animatedField(self, didSecureText: secure)
     }
 }
